@@ -26,14 +26,18 @@
 @media(max-width:760px){.app-navigation{margin:13px 0 17px}.chart-filters{grid-template-columns:1fr 1fr}.chart-filters .exercise-filter{grid-column:1/-1}.chart-card{padding:18px}.stats-cards{gap:8px}.stats-cards article{padding:15px 12px}.stats-cards span{font-size:11px}.stats-cards strong{font-size:27px}}
 @media(max-width:440px){.app-navigation{width:100%}.app-navigation button{flex:1}.timer{gap:8px}.timer-clock{font-size:25px;min-width:66px}.timer #timerStart{padding:10px 12px;min-width:78px;font-size:12px}.timer #timerReset{min-width:40px}.stats-cards article{padding:13px 10px}.stats-cards span{font-size:10px;min-height:30px}.stats-cards strong{font-size:26px}.chart-heading{gap:10px}.chart-heading strong{font-size:30px}.chart-trend{font-size:12px;max-width:175px}.chart-card{padding:16px}.chart-shell{grid-template-columns:38px minmax(0,1fr);gap:5px}.chart-y,.chart-x{font-size:10px}.stats-panel .section-line{align-items:flex-start}.stats-panel h2{font-size:22px}}
 
+
+.motivation{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--accent-text);border-radius:10px;background:var(--surface)}.motivation-icon{font-size:23px;line-height:1;color:var(--accent-text);flex-shrink:0}.motivation p{font-size:13px;line-height:1.65;margin:0;color:var(--ink)}.motivation small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.motivation-down{border-left-color:var(--danger)}.motivation-down .motivation-icon{color:var(--danger)}.stats-heading{align-items:center;flex-wrap:wrap}.stats-heading h2{margin-bottom:5px}.stats-heading>div>small{text-align:left;display:block}.stats-heading #clearProgress{font-size:12px;padding:10px 13px;min-height:44px}.dialog-actions #confirmClearProgress{margin-right:0}
+@media(max-width:440px){.motivation{padding:12px;gap:9px}.motivation p{font-size:12px}.stats-heading{gap:12px}.stats-heading h2{font-size:21px}.stats-heading>div>small{font-size:10px;max-width:none}.stats-heading #clearProgress{padding:9px 10px;font-size:11px}.stats-heading>div{flex:1;min-width:140px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header class="topbar">
 <a class="brand" href="#" aria-label="Repsendo — дневник тренировок"><svg class="brand-mark" viewBox="0 0 72 58" aria-hidden="true"><path fill="currentColor" d="M5 3h43c15 0 23 8 23 20 0 9-5 16-14 19l14 15H48L32 38H25L16 57H0l16-35h29c5 0 8-2 8-5s-3-5-8-5H13z"/><path fill="#baff00" d="M0 57 71 21 19 57z"/></svg><span>REPSENDO</span></a>
-<div class="top-actions"><span class="gym-label">ДНЕВНИК ЗАЛА</span><button id="themeToggle" class="theme-button" type="button" aria-label="Включить светлую тему"><span id="themeIcon" class="theme-icon" aria-hidden="true">☀</span><span id="themeText" class="theme-text">Светлая тема</span></button></div>
+<div class="top-actions"><span class="gym-label">ДНЕВНИК ЗАЛА</span><button id="themeToggle" class="theme-button" type="button" aria-label="Тёмная тема. Включить светлую тему"><span id="themeIcon" class="theme-icon" aria-hidden="true">☾</span><span id="themeText" class="theme-text">Тёмная тема</span></button></div>
 </header>
+<aside id="motivation" class="motivation hidden" role="status" aria-live="polite"><span id="motivationIcon" class="motivation-icon" aria-hidden="true"></span><div><p id="motivationText"></p><small>Динамика за последние 30 дней</small></div></aside>
 <div id="storageAlert" class="storage-alert hidden" role="alert"></div>
 <main>
 <h1 class="sr-only">Дневник тренировок Repsendo</h1>
@@ -48,7 +52,7 @@
 <section id="history" class="history hidden" aria-labelledby="historyTitle"><div class="section-line"><h2 id="historyTitle">История тренировок</h2><button id="closeHistory" class="quiet" type="button" aria-label="Закрыть историю">Закрыть</button></div><div id="historyList" class="history-list"></div></section>
 </section>
 <section id="statsPanel" class="stats-panel hidden" aria-labelledby="statsTitle">
-<div class="section-line"><h2 id="statsTitle">Твой прогресс</h2><small>По сохранённым тренировкам</small></div>
+<div class="section-line stats-heading"><div><h2 id="statsTitle">Твой прогресс</h2><small>По сохранённым тренировкам</small></div><button id="clearProgress" class="danger" type="button">Удалить прогресс</button></div>
 <div class="stats-cards"><article><span>Всего тренировок</span><strong id="statTotal">0</strong></article><article><span>На этой неделе</span><strong id="statWeek">0</strong></article><article><span>Записано подходов</span><strong id="statSets">0</strong></article></div>
 <section class="chart-card" aria-labelledby="chartTitle">
 <div class="chart-filters"><div class="exercise-filter"><label for="statsExercise">Упражнение</label><select id="statsExercise"></select></div><div><label for="statsMetric">Показатель</label><select id="statsMetric"><option value="weight">Максимальный вес</option><option value="reps">Всего повторений</option><option value="volume">Объём нагрузки</option></select></div><div><label for="statsGroup">Период</label><select id="statsGroup"><option value="session">По тренировкам</option><option value="day" selected>По дням</option><option value="week">По неделям</option></select></div></div>
@@ -65,6 +69,7 @@
 </div>
 
 <div id="toast" class="toast hidden" role="status"></div>
+<dialog id="clearProgressDialog" class="dialog" aria-labelledby="clearProgressTitle" aria-describedby="clearProgressDescription"><h2 id="clearProgressTitle">Удалить весь прогресс?</h2><p id="clearProgressDescription" class="note">Удалятся вся история тренировок, результаты и незавершённые записи в этом браузере. Графики обнулятся. Программа тренировок и выбранная тема останутся.</p><p class="note">Ранее скачанные резервные копии нужно удалить отдельно.</p><p id="clearProgressError" class="dialog-error" role="alert"></p><div class="dialog-actions"><button id="cancelClearProgress" class="quiet" type="button" autofocus>Отмена</button><button id="confirmClearProgress" class="danger" type="button">Удалить навсегда</button></div></dialog>
 <dialog id="exerciseDialog" class="dialog" aria-labelledby="exerciseDialogTitle"><form id="exerciseForm"><h2 id="exerciseDialogTitle">Упражнение</h2><label for="exerciseName">Название</label><input id="exerciseName" type="text" maxlength="160" required><div class="form-grid"><div><label for="exerciseSets">Подходы</label><input id="exerciseSets" type="number" min="1" max="30" step="1" required></div><div><label for="exerciseStep">Шаг веса, кг</label><input id="exerciseStep" type="number" min="0" max="100" step="any" required></div><div><label for="exerciseMin">Повторения от</label><input id="exerciseMin" type="number" min="1" max="999" step="1" required></div><div><label for="exerciseMax">Повторения до</label><input id="exerciseMax" type="number" min="1" max="999" step="1" required></div></div><p id="exerciseError" class="dialog-error" role="alert"></p><div class="dialog-actions"><button id="deleteExercise" class="danger" type="button">Удалить</button><button id="cancelExercise" class="quiet" type="button">Отмена</button><button class="primary" type="submit">Сохранить</button></div></form></dialog>
 <script>
 const seed=[{"name": "Пн — Верх А", "ex": [{"id": "g0e0", "name": "Жим штанги лёжа", "sets": 3, "min": 6, "max": 10, "step": 2.5}, {"id": "g0e1", "name": "Горизонтальная тяга блока", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g0e2", "name": "Тяга верхнего блока", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g0e3", "name": "Бабочка", "sets": 2, "min": 10, "max": 15, "step": 2.5}, {"id": "g0e4", "name": "Подъёмы гантелей в стороны", "sets": 3, "min": 12, "max": 20, "step": 2.5}, {"id": "g0e5", "name": "Скамья Скотта", "sets": 2, "min": 8, "max": 12, "step": 2.5}, {"id": "g0e6", "name": "Разгибание рук на блоке", "sets": 2, "min": 10, "max": 15, "step": 2.5}, {"id": "g0e7", "name": "Скручивания", "sets": 3, "min": 10, "max": 20, "step": 0}]}, {"name": "Вт — Низ А + пресс", "ex": [{"id": "g1e0", "name": "Жим ногами", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g1e1", "name": "Сгибание ног в тренажёре", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g1e2", "name": "Разгибание ног в тренажёре", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g1e3", "name": "Ягодичный мост", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g1e4", "name": "Подъёмы на носки", "sets": 3, "min": 12, "max": 20, "step": 2.5}, {"id": "g1e5", "name": "Подъём коленей в висе", "sets": 3, "min": 10, "max": 20, "step": 0}]}, {"name": "Чт — Верх Б", "ex": [{"id": "g2e0", "name": "Наклонный жим гантелей", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g2e1", "name": "Тяга верхнего блока", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g2e2", "name": "Горизонтальная тяга блока", "sets": 3, "min": 8, "max": 12, "step": 2.5}, {"id": "g2e3", "name": "Бабочка", "sets": 2, "min": 10, "max": 15, "step": 2.5}, {"id": "g2e4", "name": "Обратная бабочка", "sets": 3, "min": 12, "max": 20, "step": 2.5}, {"id": "g2e5", "name": "Подъёмы гантелей в стороны", "sets": 2, "min": 12, "max": 20, "step": 2.5}, {"id": "g2e6", "name": "Скамья Скотта", "sets": 2, "min": 8, "max": 12, "step": 2.5}, {"id": "g2e7", "name": "Разгибание рук на блоке", "sets": 2, "min": 10, "max": 15, "step": 2.5}, {"id": "g2e8", "name": "Скручивания на блоке", "sets": 3, "min": 10, "max": 20, "step": 0}]}, {"name": "Сб — Низ Б + пресс", "ex": [{"id": "g3e0", "name": "Жим ногами", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g3e1", "name": "Сгибание ног в тренажёре", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g3e2", "name": "Разгибание ног в тренажёре", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g3e3", "name": "Ягодичный мост", "sets": 3, "min": 10, "max": 15, "step": 2.5}, {"id": "g3e4", "name": "Подъёмы на носки", "sets": 3, "min": 12, "max": 25, "step": 2.5}, {"id": "g3e5", "name": "Обратные скручивания", "sets": 3, "min": 12, "max": 20, "step": 0}]}];
@@ -118,10 +123,12 @@ function toast(message){clearTimeout(toastTimeout);$('toast').textContent=messag
 
 function applyTheme(){
   const light=document.documentElement.dataset.theme==='light';
-  $('themeToggle').setAttribute('aria-label',light?'Включить тёмную тему':'Включить светлую тему');
+  const action=light?'Светлая тема. Включить тёмную тему':'Тёмная тема. Включить светлую тему';
+  $('themeToggle').setAttribute('aria-label',action);
+  $('themeToggle').setAttribute('title',action);
   $('themeToggle').setAttribute('aria-pressed',String(light));
-  $('themeIcon').textContent=light?'☾':'☀';
-  $('themeText').textContent=light?'Тёмная тема':'Светлая тема';
+  $('themeIcon').textContent=light?'☀':'☾';
+  $('themeText').textContent=light?'Светлая тема':'Тёмная тема';
   const background=light?'#ffffff':'#121411';
   document.documentElement.style.backgroundColor=background;
   document.body.style.backgroundColor=background;
@@ -169,7 +176,7 @@ function render(){
     d.entries[el.dataset.check][+el.dataset.row].done=el.checked;el.closest('.set-row').classList.toggle('is-done',el.checked);save();updateSession();
   });
   $('exercises').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openExercise(+b.dataset.edit));
-  updateSession();renderHistory();if(currentView==='stats')renderAnalytics();save();
+  updateSession();renderHistory();renderMotivation();if(currentView==='stats')renderAnalytics();save();
 }
 function openExercise(index){
   editing=index;
@@ -247,6 +254,25 @@ $('statsView').onclick=()=>setView('stats');
 $('statsExercise').onchange=event=>{analyticsExercise=event.target.value;renderAnalytics()};
 $('statsMetric').onchange=event=>{analyticsMetric=event.target.value;renderAnalytics()};
 $('statsGroup').onchange=event=>{analyticsGroup=event.target.value;renderAnalytics()};
+$('clearProgress').onclick=()=>{
+  $('clearProgressError').textContent='';
+  $('clearProgressDialog').showModal();
+};
+$('cancelClearProgress').onclick=()=>$('clearProgressDialog').close();
+$('confirmClearProgress').onclick=()=>{
+  const cleared={days:clone(db.days),history:[],drafts:{}};
+  try{localStorage.setItem(KEY,JSON.stringify(cleared))}
+  catch{
+    $('clearProgressError').textContent='Браузер не позволил удалить сохранённые данные. Попробуй ещё раз или очисти данные сайта в настройках браузера.';
+    return;
+  }
+  db=cleared;storageReadable=true;showHistory=false;analyticsExercise=null;
+  $('storageAlert').classList.add('hidden');
+  $('timerReset').onclick();
+  render();
+  $('clearProgressDialog').close();
+  toast('История, прогресс и незавершённые записи удалены.');
+};
 
 function numberOrNull(value){
   if(typeof value!=='number'&&typeof value!=='string')return null;
@@ -364,6 +390,74 @@ function drawChart(points,metric){
     el.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPoint(+el.dataset.point)}};
   });
   selectPoint(points.length-1);
+}
+
+const DAY_MS=86400000;
+function calendarDay(time){
+  const date=new Date(time);
+  return Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())/DAY_MS;
+}
+function motivationTrend(history,now=Date.now()){
+  const today=calendarDay(now);
+  const recent=history.filter(h=>(!h.mode||h.mode==='gym')&&h.time<=now&&today-calendarDay(h.time)<30);
+  const ids=new Set(recent.flatMap(h=>h.entries.map(e=>e.id)));
+  let eligible=0,improving=0,declining=0;
+  for(const id of ids){
+    const weights=analyticsSeries(recent,id,'weight','day');
+    let daily;
+    if(weights.some(p=>p.value>0))daily=weights.filter(p=>p.value>0);
+    else{
+      const reps=new Map();
+      for(const h of recent)for(const e of h.entries){
+        if(e.id!==id)continue;
+        const rows=loggedRows(e);
+        if(!rows.length)continue;
+        const time=periodStart(h.time,'day'),value=Math.max(...rows.map(r=>numberOrNull(r.reps)));
+        reps.set(time,{time,value:Math.max(reps.get(time)?.value??0,value)});
+      }
+      daily=Array.from(reps.values()).sort((a,b)=>a.time-b.time);
+    }
+    if(daily.length<4||calendarDay(daily.at(-1).time)-calendarDay(daily[0].time)<21||today-calendarDay(daily.at(-1).time)>7)continue;
+    const weeks=new Map();
+    for(const p of daily){
+      const week=periodStart(p.time,'week');
+      weeks.set(week,Math.max(weeks.get(week)??0,p.value));
+    }
+    const values=Array.from(weeks.entries()).sort((a,b)=>a[0]-b[0]).map(([,value])=>value);
+    if(values.length<4)continue;
+    const baseline=(values[0]+values[1])/2,latest=(values.at(-2)+values.at(-1))/2;
+    if(baseline<=0)continue;
+    eligible++;
+    const change=(latest-baseline)/baseline;
+    let ups=0,downs=0;
+    for(let i=1;i<values.length;i++){
+      const delta=(values[i]-values[i-1])/values[i-1];
+      if(delta>.005)ups++;
+      if(delta<-.005)downs++;
+    }
+    const enough=Math.ceil((values.length-1)*.6);
+    if(change>=.05-1e-9&&ups>=enough)improving++;
+    if(change<=-.05+1e-9&&downs>=enough)declining++;
+  }
+  const direction=eligible&&improving/eligible>=.6&&!declining?'up':eligible&&declining/eligible>=.6&&!improving?'down':null;
+  return {direction,eligible,improving,declining};
+}
+function renderMotivation(){
+  const result=motivationTrend(db.history),banner=$('motivation');
+  banner.classList.toggle('hidden',!result.direction);
+  banner.classList.toggle('motivation-down',result.direction==='down');
+  if(!result.direction){$('motivationText').textContent='';$('motivationIcon').textContent='';return}
+  const messages=result.direction==='up'?[
+    'Так держать, друг! За месяц твои результаты выросли. Продолжай в своём ритме!',
+    'Твои усилия дают результат: показатели за месяц растут. Отличная работа, друг!',
+    'Движение вперёд видно по результатам. Сохраняй регулярность — ты на верном пути!'
+  ]:[
+    'Друг, за месяц показатели снизились. Не сдавайся: сохраняй регулярность и удели внимание восстановлению.',
+    'Сейчас результаты ниже прежних, но это не повод опускать руки. Двигайся постепенно и следи за восстановлением.',
+    'За месяц есть спад результатов. Поддержи себя: проверь свой режим и возвращайся к росту шаг за шагом.'
+  ];
+  $('motivationText').textContent=messages[new Date(Date.now()).getDate()%messages.length];
+  $('motivationIcon').textContent=result.direction==='up'?'↗':'↘';
 }
 
 let elapsed=0,tick=null,timerStarted=0,running=false;
